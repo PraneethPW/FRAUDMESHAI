@@ -1,0 +1,14 @@
+export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+
+export interface User { id: string; workspace_id: string; email: string; full_name: string; role: 'ADMIN' | 'ANALYST' | 'INVESTIGATOR' }
+export interface TokenPair { access_token: string; refresh_token: string; token_type: string; user: User }
+export interface Transaction { id: string; external_id: string; account_id: string; customer_id?: string; merchant_id: string; merchant_name: string; amount: number; currency: string; device_id: string; ip_address: string; location: string; occurred_at: string; status: string; source: string; risk_score: number; risk_level: RiskLevel; features?: Record<string, number | string | boolean>; evidence?: Evidence; model_version?: string }
+export interface Factor { key: string; label: string; contribution: number }
+export interface Evidence { factors?: Factor[]; reasons?: string[]; features?: Record<string, number | string | boolean>; risk_probability?: number; model_version?: string; prediction_timestamp?: string }
+export interface Alert { id: string; transaction_id?: string; title: string; severity: RiskLevel; risk_score: number; status: string; assigned_to?: string; explanation: string; evidence: Evidence; created_at: string; updated_at: string }
+export interface InvestigationCase { id: string; title: string; severity: RiskLevel; status: string; assigned_to?: string; created_by: string; decision?: string; evidence: Record<string, unknown>; created_at: string; updated_at: string; notes?: Array<{ id: string; body: string; author_id: string; created_at: string }>; alert_ids?: string[] }
+export interface Ring { id: string; name: string; risk_score: number; risk_level: RiskLevel; reason: string; estimated_amount: number; properties: Record<string, string | number>; members: Array<{ id: string; type: string }>; created_at: string }
+export interface GraphResponse { nodes: Array<{ data: { id: string; entity_id?: string; label: string; type: string; risk: number; community?: number } }>; edges: Array<{ data: { id: string; source: string; target: string; type: string; weight?: number } }>; meta?: { nodes: number; edges: number; communities: number; generated_at: string } }
+export interface DashboardData { metrics: Record<string, number | string>; trend: Array<{ date: string; transactions: number; alerts: number }>; fraud_by_hour: Array<{ hour: string; count: number }>; risk_distribution: Array<{ name: string; value: number }>; alerts_by_severity: Array<{ name: string; value: number }>; top_merchants: Array<{ name: string; risk: number; volume: number }>; top_devices: Array<{ name: string; risk: number; volume: number }>; mode: string }
+export interface ModelRun { id: string; model_type: string; status: string; dataset_name: string; metrics: Record<string, number | Record<string, number> | Array<Record<string, number>>>; created_at: string }
+
