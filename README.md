@@ -6,6 +6,10 @@ FraudMesh XAI is a working full-stack research and investigation platform that t
 
 All bundled events and example metrics are labelled as simulated. FraudMesh never presents demo data as live banking activity, and its optional AI assistant never makes the fraud decision.
 
+## Version 2
+
+The functional upgrade preserves the deployed visual theme and service layout. See [v2 operating and upgrade guide](docs/V2_UPGRADE.md) for transaction entry/import, saved-model activation, case evidence/exports, account administration and deployment compatibility.
+
 ## Architecture
 
 ```text
@@ -33,13 +37,13 @@ The frontend and backend are completely separated. PostgreSQL is the system of r
 
 - Argon2 authentication, JWT access tokens, rotating stored refresh tokens, logout revocation, roles, and workspace isolation.
 - Versioned `/api/v1` REST API and authenticated WebSocket channel.
-- Persisted transaction ingestion, validated CSV imports, and a clearly marked synthetic simulation mode at 1, 5, or 10 events per second.
+- Persisted transaction ingestion, validated CSV imports, and a clearly marked synthetic simulation mode paced at 1, 5, or 10 events per second (up to 500 events per run).
 - Data-driven temporal, behavioral, device-sharing, IP-sharing, velocity, amount, location, and graph-risk evidence.
 - Heterogeneous graph explorer for customer, account, transaction, merchant, device, IP, and location nodes.
 - Graph zoom, pan, drag, type/risk filtering, entity focus, neighborhood expansion, community detection, and suspicious-path highlighting.
 - Persisted fraud alerts, structured XAI evidence, feature contribution charts, alert review states, fraud ring detection, and notifications.
 - Investigation cases with alert linkage, evidence snapshots, assignments, notes, decisions, status transitions, and audit history.
-- Executed Logistic Regression, XGBoost, static graph-neural surrogate, and temporal graph-neural surrogate evaluation.
+- Executed Logistic Regression, XGBoost, static graph neural network, and time-decayed graph neural network evaluation.
 - Optional OpenRouter or OpenAI-compatible grounded summaries with an explicit no-key fallback.
 - Responsive cinematic landing page, mobile investigation console, command palette (`Ctrl + K`), reduced-motion support, and branded loading/empty/error states.
 
@@ -154,14 +158,9 @@ Sign in as the demo analyst, open **Live monitor**, choose 1/5/10 events per sec
 
 ## Model pipeline
 
-The online score combines executed feature engineering with configurable thresholds. The Model Lab creates an imbalanced synthetic classification dataset, executes the selected estimator, and persists precision, recall, F1, ROC-AUC, PR-AUC, false-positive rate, confusion matrix, ROC/PR curves, training time, and per-sample latency.
+Without an activated trained model, online scoring uses a transparent causal heuristic. Model Lab trains Logistic Regression, XGBoost, static mean-message-passing GNN and time-decayed mean-message-passing GNN models on deterministic synthetic motifs or labelled workspace transactions. All use chronological train/validation/test splits, train-only scaling and validation-selected thresholds. Metrics and portable model weights are persisted. Administrators can activate one model per workspace for incoming transactions or restore heuristic scoring.
 
-- Logistic Regression: executed scikit-learn baseline.
-- XGBoost: executed boosted-tree baseline with imbalanced classification metrics.
-- Static GNN: executed neural surrogate using graph-neighborhood features; modular adapters define the PyTorch Geometric replacement boundary.
-- Temporal GNN: executed neural surrogate using graph, time-decay, and temporal rolling features.
-
-The online production-style scorer is a transparent time-aware graph ensemble. See [docs/ML_PIPELINE.md](docs/ML_PIPELINE.md) and [docs/GRAPH_MODEL.md](docs/GRAPH_MODEL.md).
+The compact graph models perform learned message passing over prior account/device/IP/merchant event neighborhoods with CPU NumPy backpropagation. They are not full TGN memory/TGAT attention implementations. Explanations expose stored context and measured feature/relation perturbations. See [docs/ML_PIPELINE.md](docs/ML_PIPELINE.md).
 
 ## Testing and quality
 
@@ -208,15 +207,15 @@ The frontend is served at `http://localhost:5173`, the backend at `http://localh
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Screenshots placeholder
+## Screenshots
 
 Add finalized portfolio captures under `docs/screenshots/` after deploying the chosen production environment. Recommended shots: cinematic hero, overview, live monitor with a critical event, graph explorer, XAI alert detail, fraud ring, case timeline, and Model Lab metrics.
 
-## Research context and prototype boundaries
+## Research and deployment boundaries
 
-FraudMesh is a capstone/research demonstration, not a certified banking or anti-money-laundering system. The temporal and static graph models are practical, executed neural surrogates over graph/time features rather than full TGN/TGAT message-memory training. The architecture deliberately isolates those adapters so PyTorch Geometric GraphSAGE/TGN can replace them without changing the product API.
+This is an executable research and investigation platform, not a certified banking detector. Actual transaction streams must be supplied through the authenticated API; bundled simulation does not connect to a bank. Synthetic evaluation does not establish real-world accuracy. Graph networks use one-layer mean message passing (temporal decay in the temporal variant), not full TGN/TGAT. Risk scores are not probability-calibrated, and perturbation evidence is not a causal explanation.
 
-Other prototype boundaries: synthetic events instead of bank rails, single-process in-memory simulation scheduling, no configured email provider for password recovery, optional rather than mandatory LLM summaries, and heuristic ring detection instead of investigator-calibrated typology models. These limits are surfaced honestly in the UI and do not affect the working core workflow.
+The current runtime uses one process/replica with bounded simulation and request-bound model training. Recovery email requires optional SMTP; AI summaries require a provider. [The operating guide](docs/V2_UPGRADE.md) documents limits and setup. Existing deployed data is preserved by additive migrations.
 
 ## Documentation
 

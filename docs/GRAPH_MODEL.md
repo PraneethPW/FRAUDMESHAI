@@ -20,3 +20,8 @@ The React Cytoscape explorer receives `{nodes, edges, meta}`, limits the visible
 
 A PyTorch Geometric projection should map entity types to node feature matrices, relational edge types to edge indices, and `occurred_at` to time encodings. A production TGN memory can then consume the same ordered edge stream. The current time-aware ensemble and temporal neural surrogate preserve the product and persistence interfaces for this replacement.
 
+
+
+## v2 implementation
+
+The v1 surrogate description is superseded by the learned message-passing implementation described in [ML pipeline](ML_PIPELINE.md). The online explorer uses stored timestamped edges; neighborhood expansion now fetches adjacent nodes/edges from the API, and transaction views include account-device/IP/customer relationships. Risk is an observed peak signal on entity nodes, not proof of fraud.

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'motion/react'
-import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, LockKeyhole, Network, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, Network, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -39,7 +39,7 @@ export default function Auth() {
         {isRegister && <><label>Full name<input {...register('full_name')} placeholder="Your full name"/>{errors.full_name && <small>{errors.full_name.message}</small>}</label><label>Workspace name<input {...register('workspace_name')} placeholder="Fraud Operations"/>{errors.workspace_name && <small>{errors.workspace_name.message}</small>}</label></>}
         <label>Email address<input {...register('email')} type="email" autoComplete="email" placeholder="analyst@company.com"/>{errors.email && <small>{errors.email.message}</small>}</label>
         <label>Password<div className="password-field"><input {...register('password')} type={show ? 'text' : 'password'} autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="At least 10 characters"/><button type="button" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'}>{show ? <EyeOff/> : <Eye/>}</button></div>{errors.password && <small>{errors.password.message}</small>}</label>
-        {!isRegister && <div className="form-options"><label><input type="checkbox"/><span><Check/></span> Keep this device recognized</label><button type="button" onClick={() => toast.message('Password recovery architecture is ready for an email provider.')}>Forgot password?</button></div>}
+        {!isRegister && <div className="form-options"><span>Secure workspace session</span><button type="button" onClick={() => navigate('/reset-password')}>Forgot password?</button></div>}
         <button className="auth-submit" disabled={isSubmitting}>{isSubmitting ? 'Securing session…' : isRegister ? 'Create workspace' : 'Enter investigation console'}<ArrowRight/></button>
       </form>
       <p className="auth-switch">{isRegister ? 'Already have access?' : 'Need a protected workspace?'} <Link to={isRegister ? '/login' : '/register'}>{isRegister ? 'Sign in' : 'Create one'}</Link></p>

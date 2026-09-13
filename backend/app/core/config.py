@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     simulation_enabled: bool = True
     upload_max_bytes: int = 10_000_000
     demo_seed: bool = True
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_sender: str | None = None
 
     @field_validator("database_url")
     @classmethod

@@ -6,9 +6,13 @@ import { Toaster } from 'sonner'
 import './index.css'
 import './console.css'
 import './pages.css'
+import './workflow.css'
 import App from './App.tsx'
+import { useAuth } from './store/auth'
 
 const client = new QueryClient({ defaultOptions: { queries: { staleTime: 4_000, retry: 1 } } })
+
+useAuth.subscribe((state, previous) => { if(state.user?.workspace_id !== previous.user?.workspace_id) client.clear() })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

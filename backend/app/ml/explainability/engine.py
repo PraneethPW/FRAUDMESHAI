@@ -16,10 +16,9 @@ def explain_score(features: dict, contributions: dict[str, float]) -> dict:
     if features["rolling_transaction_count_1h"] >= 4:
         reasons.append(f"{features['rolling_transaction_count_1h']} transactions within the rolling hour")
     if features["unusual_hour"]:
-        reasons.append("Activity occurred outside the account's typical operating window")
+        reasons.append("Activity occurred between 00:00 and 04:59 UTC")
     if features["location_changed"]:
         reasons.append("Location changed since the previous account event")
     if features["amount"] >= 5000:
-        reasons.append("Amount is elevated relative to the simulated operating baseline")
+        reasons.append("Amount exceeds the configured heuristic reference of 5,000 currency units")
     return {"factors": factors, "reasons": reasons or ["No dominant anomaly; score reflects combined weak signals"], "features": features}
-

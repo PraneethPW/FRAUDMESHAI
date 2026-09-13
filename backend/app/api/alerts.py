@@ -11,13 +11,17 @@ router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 
 @router.get("", response_model=list[AlertOut])
-async def list_alerts(user: CurrentUser, db: DB, severity: str | None = None, status: str | None = None, limit: int = Query(100, ge=1, le=500)) -> list[Alert]:
+async def list_alerts(
+    user: CurrentUser, db: DB, severity: str | None = None, status: str | None = None, limit: int = Query(100, ge=1, le=500), offset: int = Query(0, ge=0), search: str | None = None
+) -> list[Alert]:
     query = select(Alert).where(Alert.workspace_id == user.workspace_id)
     if severity:
         query = query.where(Alert.severity == severity.upper())
     if status:
         query = query.where(Alert.status == status.upper())
-    return list((await db.execute(query.order_by(Alert.created_at.desc()).limit(limit))).scalars().all())
+    if search:
+        query = query.where(Alert.title.ilike(f"%{search[:100]}%") | Alert.explanation.ilike(f"%{search[:100]}%"))
+    return list((await db.execute(query.order_by(Alert.created_at.desc()).offset(offset).limit(limit))).scalars().all())
 
 
 @router.get("/{alert_id}", response_model=AlertOut)
@@ -33,12 +37,27 @@ async def update_alert(alert_id: str, payload: AlertUpdate, user: CurrentUser, d
     alert = (await db.execute(select(Alert).where(Alert.id == alert_id, Alert.workspace_id == user.workspace_id))).scalar_one_or_none()
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
-    changes = payload.model_dump(exclude_none=True)
+    from app.api.cases import validate_assignee
+    from app.services.labels import set_label
+
+    await validate_assignee(db, user.workspace_id, payload.assigned_to)
+    changes = payload.model_dump(exclude_unset=True)
+    if "status" in changes and changes["status"] is None:
+        raise HTTPException(422, "Status cannot be null")
     for field, value in changes.items():
         setattr(alert, field, value)
+    if alert.transaction_id and payload.status in ("CONFIRMED_FRAUD", "FALSE_POSITIVE"):
+        await set_label(
+            db,
+            user.workspace_id,
+            alert.transaction_id,
+            payload.status == "CONFIRMED_FRAUD",
+            "ALERT_REVIEW",
+            f"Alert {alert.id} reviewed",
+            user.id,
+        )
     await audit(db, user.workspace_id, "ALERT_REVIEWED", user.id, "alert", alert.id, changes)
     await db.commit()
     await db.refresh(alert)
     await manager.broadcast(user.workspace_id, "fraud.alert.updated", AlertOut.model_validate(alert).model_dump(mode="json"))
     return alert
-

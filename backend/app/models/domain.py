@@ -344,3 +344,31 @@ class Notification(Base, TimestampMixin):
     kind: Mapped[str] = mapped_column(String(40))
     read: Mapped[bool] = mapped_column(Boolean, default=False)
 
+
+class TransactionLabel(Base, TimestampMixin):
+    __tablename__ = "transaction_labels"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    transaction_id: Mapped[str] = mapped_column(ForeignKey("transactions.id"), unique=True)
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    is_fraud: Mapped[bool] = mapped_column(Boolean)
+    source: Mapped[str] = mapped_column(String(30))
+    reason: Mapped[str] = mapped_column(Text, default="")
+    author_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+
+
+class ModelArtifact(Base, TimestampMixin):
+    __tablename__ = "model_artifacts"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    run_id: Mapped[str] = mapped_column(ForeignKey("training_runs.id"), unique=True)
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=False)
+    artifact: Mapped[dict] = mapped_column(JSON)
+
+
+class PasswordReset(Base, TimestampMixin):
+    __tablename__ = "password_resets"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used: Mapped[bool] = mapped_column(Boolean, default=False)

@@ -17,6 +17,8 @@ const Cases = lazy(() => import('./pages/Cases'))
 const CaseDetail = lazy(() => import('./pages/Cases').then((module) => ({ default: module.CaseDetail })))
 const Assistant = lazy(() => import('./pages/Assistant'))
 const Models = lazy(() => import('./pages/Models'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const Profile = lazy(() => import('./pages/Profile'))
 const Admin = lazy(() => import('./pages/Admin'))
 
 function Protected({ children }: { children: ReactNode }) {
@@ -28,6 +30,7 @@ export default function App() {
   return <Suspense fallback={<GraphLoader />}><Routes>
     <Route path="/" element={<Landing/>}/>
     <Route path="/login" element={<Auth/>}/>
+    <Route path="/reset-password" element={<ResetPassword/>}/>
     <Route path="/register" element={<Auth/>}/>
     <Route path="/app" element={<Protected><AppShell/></Protected>}>
       <Route index element={<Dashboard/>}/>
@@ -41,6 +44,7 @@ export default function App() {
       <Route path="cases/:caseId" element={<CaseDetail/>}/>
       <Route path="assistant" element={<Assistant/>}/>
       <Route path="models" element={<Models/>}/>
+      <Route path="profile" element={<Profile/>}/>
       <Route path="admin" element={<Admin/>}/>
     </Route>
     <Route path="*" element={<Navigate to="/" replace/>}/>

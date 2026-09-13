@@ -1,0 +1,14 @@
+/* Functional controls reuse the existing console palette; landing and theme styles stay untouched. */
+.metadata-panel form,.admin-users form,.train-panel form{padding:16px}
+.metadata-panel form label,.admin-users form label,.train-panel form label{display:grid;gap:8px;color:#a79daf;font-size:11px;min-width:0}
+.metadata-panel form input,.admin-users form input,.train-panel form input,.admin-users select,.case-assignment select{width:100%;min-width:0;border:1px solid var(--border);border-radius:8px;background:#17131f;color:#e1d9ec;padding:10px;outline:none}
+.metadata-panel form input:focus,.admin-users form input:focus,.train-panel form input:focus{border-color:#9470ee}
+.metadata-panel form button,.admin-users form button,.train-panel form button{margin-top:14px}
+.list-toolbar{flex-wrap:wrap;gap:10px}
+.list-toolbar>button,.run-table button,.upload-panel>button,.runs-panel>button,.case-assignment>button{border:1px solid var(--border);padding:8px 12px;border-radius:8px;background:#9470ee12;color:#c7b5ed;font-size:11px}
+.list-toolbar>button:disabled,button:disabled{opacity:.5;cursor:not-allowed}
+.admin-list select{max-width:130px}.admin-list>div{flex-wrap:wrap}.admin-list button{font-size:10px;color:#bca4ed}
+.train-panel>p,.metrics-panel>p,.upload-panel>p,.feature-panel>p,.breakdown-panel>p{padding:0 16px;color:#9a8ea6;font-size:11px;line-height:1.6}
+.run-table>div>span{flex-wrap:wrap}.run-table button{margin:3px;font-size:10px}
+.evidence-json b,.event-timeline p{overflow-wrap:anywhere}
+.metadata-panel form{margin-bottom:12px}.metadata-panel form+.panel{margin-top:12px}
